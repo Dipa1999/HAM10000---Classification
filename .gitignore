@@ -1,0 +1,72 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.so
+*.dylib
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Jupyter ────────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Dataset & raw data (download separately from Kaggle) ──────────────────────
+data/
+*.csv.gz
+*.zip
+*.tar.gz
+
+# ── Model checkpoints (large binary files) ────────────────────────────────────
+processed/*.pth
+processed/*.pt
+processed/*.ckpt
+
+# Keep the processed CSV splits and structure
+!processed/.gitkeep
+!processed/train.csv
+!processed/val.csv
+!processed/test.csv
+
+# ── Grad-CAM and generated plots ──────────────────────────────────────────────
+processed/gradcam/
+processed/*.png
+processed/*.jpg
+
+# ── Streamlit ─────────────────────────────────────────────────────────────────
+.streamlit/secrets.toml
+
+# ── OS & editors ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── LaTeX auxiliary files ─────────────────────────────────────────────────────
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/_minted*/
+# Keep the final compiled PDF
+!paper/paper.pdf

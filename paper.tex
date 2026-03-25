@@ -1,0 +1,334 @@
+\documentclass[10pt,twocolumn]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+
+\usepackage{geometry}
+\geometry{a4paper, top=2cm, bottom=2cm, left=1.8cm, right=1.8cm, columnsep=0.6cm}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\usepackage{cite}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{authblk}
+
+% ── Title ─────────────────────────────────────────────────────────────────────
+\title{%
+  \large\textbf{Multi-Model Deep Learning for Dermoscopic\\
+  Skin Lesion Classification on HAM10000}
+}
+
+\author[1]{Giuseppe Di Pasquale}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+% ── Abstract ──────────────────────────────────────────────────────────────────
+\begin{abstract}
+Automated classification of skin lesions from dermoscopic images is clinically important and technically challenging, owing to fine inter-class visual similarity and severe class imbalance. We present a comprehensive deep learning pipeline trained on the HAM10000 benchmark (10,015 dermoscopic images, 7 classes). Five architectures of increasing complexity are designed and evaluated: a baseline custom CNN (HAMCNN), an enhanced CNN with Feature Pyramid Network (FPN), Generalised Mean pooling, stochastic depth, and Sharpness-Aware Minimisation; a dual-branch Double CNN with auxiliary reconstruction; a fine-tuned DINOv2-Small Vision Transformer; and a fine-tuned EfficientNetB3. A weighted ensemble whose coefficients are optimised via Differential Evolution achieves \textbf{86.1\%} accuracy, \textbf{0.807} macro-F1, and \textbf{0.966} AUC-ROC on the held-out test set, outperforming all individual models. An interactive Streamlit web application provides inference with Grad-CAM saliency overlays.
+\end{abstract}
+
+\noindent\textbf{Keywords:} skin lesion classification, dermoscopy, CNN, Vision Transformer, DINOv2, EfficientNet, Focal Loss, ensemble, HAM10000.
+
+% ── 1. Introduction ───────────────────────────────────────────────────────────
+\section{Introduction}
+\label{sec:intro}
+
+Skin cancer is among the most prevalent cancers globally, with early and accurate diagnosis being critical for patient outcomes. Dermoscopy substantially improves diagnostic accuracy, yet access to expert dermatologists is unevenly distributed. Automated computer-aided diagnosis systems can serve as decision-support tools, particularly in resource-limited settings.
+
+The HAM10000 dataset~\cite{tschandl2018ham10000} contains 10,015 dermoscopic images spanning seven lesion types and poses two key challenges: (i)~\textit{fine-grained visual similarity} between malignant and benign lesions; and (ii)~\textit{severe class imbalance}, with melanocytic nevi comprising $\approx$67\% of samples. We systematically compare five architectures and combine them into an optimised ensemble, ablating the contribution of each design choice.
+
+% ── 2. Related Work ───────────────────────────────────────────────────────────
+\section{Related Work}
+\label{sec:related}
+
+Esteva et al.~\cite{esteva2017dermatologist} showed that CNNs trained on large clinical image collections can achieve dermatologist-level accuracy. The ISIC challenge series~\cite{codella2018skin} established standardised benchmarks on HAM10000, with top entries relying on ensembles and heavy augmentation. EfficientNet~\cite{tan2019efficientnet} introduced compound scaling for efficient CNN design. Vision Transformers (ViT)~\cite{dosovitskiy2020vit} achieve competitive results when pretrained at scale. DINOv2~\cite{oquab2023dinov2} extends self-supervised ViT pretraining, producing transferable features for fine-grained tasks. Focal Loss~\cite{lin2017focal} and SAM~\cite{foret2021sam} address class imbalance and loss-landscape sharpness, respectively. FPNs~\cite{lin2017fpn} aggregate multi-scale features and benefit fine-grained recognition.
+
+% ── 3. Dataset & Preprocessing ────────────────────────────────────────────────
+\section{Dataset and Preprocessing}
+\label{sec:data}
+
+\subsection{Dataset}
+HAM10000 provides 10,015 JPEG dermoscopic images across seven classes: actinic keratosis (akiec), basal cell carcinoma (bcc), benign keratosis (bkl), dermatofibroma (df), melanoma (mel), melanocytic nevi (nv), and vascular lesion (vasc). Each image carries a patient identifier used to prevent data leakage.
+
+\subsection{Preprocessing and Splitting}
+Images are resized to $224\times224$ and normalised using ImageNet statistics ($\mu=[0.485, 0.456, 0.406]$, $\sigma=[0.229, 0.224, 0.225]$). Outlier images are removed prior to splitting. Patient-disjoint splits are generated with \texttt{GroupShuffleSplit}: train~(6,800), validation~(1,450), test~(1,431).
+
+\subsection{Class Balancing}
+Imbalance is mitigated via: (i)~\textbf{WeightedRandomSampler}, producing a near-uniform per-epoch distribution; and (ii)~\textbf{class-weighted Focal Loss}, down-weighting easy majority-class examples.
+
+\subsection{Data Augmentation}
+Training uses a dermatoscopy-motivated Albumentations~\cite{buslaev2020albumentations} pipeline: geometric transforms (horizontal/vertical flip, RandomRotate90, ElasticTransform, GridDistortion, OpticalDistortion), photometric transforms (CLAHE, RandomShadow, ColorJitter), CoarseDropout, MixUp ($\alpha=0.4$), and CutMix ($p=0.5$). Validation and test images receive only resize and normalisation.
+
+% ── 4. Methods ────────────────────────────────────────────────────────────────
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Baseline CNN (HAMCNN)}
+A five-stage network with channel widths $[32,64,128,256,384]$, each stage comprising residual blocks followed by $2\times2$ max-pooling. The head applies global average pooling, a 256-unit hidden layer, dropout ($p=0.4$), and a 7-class linear output.
+
+\subsection{Enhanced CNN}
+The baseline is augmented with: (1)~\textbf{FPN} fusing stages 3--5 to a 128-channel space; (2)~\textbf{GeM pooling} with learnable exponent ($p_0=2.0$); and (3)~\textbf{Stochastic Depth} ($p_{\mathrm{drop}}=0.15$). Trained with SAM and AMP.
+
+\subsection{Double CNN}
+A shared stem (stages 1--2, $32\to64$ channels) feeds: a \textbf{classification branch} (deeper stages with FPN and GeM) and a \textbf{reconstruction branch} (transposed-convolution decoder to pixel space). The training objective is:
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_{\mathrm{focal}} + 0.15\cdot\mathcal{L}_{\mathrm{recon}}
+\end{equation}
+The auxiliary task prevents the stem from discarding low-level texture information relevant to lesion characterisation.
+
+\subsection{Vision Transformer — DINOv2-Small}
+\texttt{vit\_small\_patch14\_dinov2} from \texttt{timm}, fine-tuned after a 5-epoch backbone freeze. Differential LRs: backbone $2\times10^{-6}$, head $5\times10^{-4}$. Head: two-layer MLP (hidden dim 512, dropout $p=0.3$).
+
+\subsection{EfficientNetB3}
+\texttt{efficientnet\_b3} pretrained on ImageNet-1k, fine-tuned after a 5-epoch freeze. Differential LRs: backbone $5\times10^{-5}$, head $5\times10^{-4}$. Head: $\mathrm{Dropout}(0.4)\to\mathrm{Linear}(1536,7)$.
+
+\subsection{Weighted Ensemble}
+Final predictions combine per-class softmax probabilities:
+\begin{equation}
+  \hat{p} = \sum_{m=1}^{5} w_m \cdot \mathrm{softmax}(\mathbf{z}_m)
+\end{equation}
+Weights are optimised on the validation set via Differential Evolution~\cite{storn1997differential} (18,200 evaluations, maximising weighted recall, converged successfully). The resulting weights are shown in Table~\ref{tab:ensemble_weights}.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{DE-optimised ensemble weights.}
+\label{tab:ensemble_weights}
+\begin{tabular}{lc}
+\toprule
+\textbf{Model} & \textbf{Weight} \\
+\midrule
+HAMCNN         & 0.0297 \\
+Enhanced CNN   & 0.0297 \\
+Double CNN     & 0.1386 \\
+ViT-DINOv2     & 0.6040 \\
+EfficientNetB3 & 0.1980 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Training Protocol}
+All models share the hyperparameters in Table~\ref{tab:hparams}.
+
+\subsection{Test-Time Augmentation}
+Two strategies are applied at inference: (1)~\textbf{Deterministic TTA} (4 passes: original, H-flip, V-flip, both); and (2)~\textbf{Stochastic TTA} (16 Monte-Carlo dropout passes with training augmentations).
+
+\subsection{Grad-CAM Visualisation}
+Grad-CAM~\cite{selvaraju2017gradcam} is applied to EfficientNetB3 to identify discriminative spatial regions per predicted class.
+
+% ── 5. Experiments ────────────────────────────────────────────────────────────
+\section{Experiments and Results}
+\label{sec:results}
+
+\subsection{Metrics}
+Evaluation on the held-out test set ($n=1{,}431$) uses: accuracy, macro-averaged F1 (macro-F1), macro-averaged AUC-ROC (one-vs-rest), and Expected Calibration Error (ECE; lower is better).
+
+\subsection{Training Dynamics}
+Figure~\ref{fig:training_curves} shows training and validation curves for all five models. The ViT exhibits a characteristic loss spike at epoch 5 when the backbone is unfrozen (red dashed line), followed by rapid convergence. EfficientNetB3 achieves the second-lowest validation loss. The three custom CNNs plateau at substantially higher loss, reflecting limited capacity relative to pretrained models. The ECE chart confirms that ViT achieves the best calibration ($\mathrm{ECE}=0.163$).
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{training_curves.png}
+  \caption{Training dynamics for all five models. \textit{Top row}: train loss, val loss, gradient norm (post-clip). \textit{Bottom row}: val accuracy, val macro-F1 (early-stop metric), ECE. Dotted line: warmup end. Dashed red line: ViT backbone unfreeze.}
+  \label{fig:training_curves}
+\end{figure}
+
+\subsection{Quantitative Results}
+Quantitative results are reported in Table~\ref{tab:results}. The ViT-DINOv2 is the strongest single model (Acc=0.853, Macro-F1=0.790, AUC=0.953), reflecting the power of self-supervised pretraining. EfficientNetB3 achieves the highest single-model AUC (0.962). The ensemble improves upon all single models on accuracy and AUC, and achieves the best macro-F1 (0.807), confirming the complementarity of the five architectures.
+
+\subsection{Per-class Performance}
+Figure~\ref{fig:perclass_f1} shows per-class F1 scores. Melanoma (mel) is the hardest class for all models due to visual overlap with melanocytic nevi. Vascular lesion (vasc) and basal cell carcinoma (bcc) are consistently well-classified. The ensemble surpasses all individual models on every class, reaching F1 of 0.91 for vasc and 0.87 for bcc.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{per_class_f1.png}
+  \caption{Per-class F1 scores for all models and the ensemble (deterministic TTA, $n=4$). The red dashed line marks $\mathrm{F1}=0.5$. The ensemble (coral bars) consistently dominates all individual models.}
+  \label{fig:perclass_f1}
+\end{figure}
+
+\subsection{Confusion Matrices}
+Figure~\ref{fig:confusion} shows normalised confusion matrices. Custom CNNs exhibit systematic mel$\to$nv confusion. ViT and EfficientNetB3 substantially reduce off-diagonal entries, and the ensemble further reinforces diagonal dominance across all seven classes.
+
+\subsection{Per-class Report}
+The full ensemble classification report is given in Table~\ref{tab:per_class}.
+
+% ── 6. Web Application ────────────────────────────────────────────────────────
+\section{Web Application}
+\label{sec:app}
+
+The Streamlit application (\texttt{app.py}) accepts a user-uploaded image with interactive cropping and returns: (i)~predicted class and top-3 class probabilities as an interactive Plotly bar chart; and (ii)~a Grad-CAM overlay. Inference uses the ensemble checkpoint on the available device (GPU or CPU).
+
+% ── 7. Limitations ────────────────────────────────────────────────────────────
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{itemize}[noitemsep, leftmargin=*]
+  \item No out-of-distribution detection: the model yields uncalibrated probabilities for non-dermoscopic inputs.
+  \item HAM10000 originates from a single clinical centre; domain shift may degrade performance on images from other dermoscopes.
+  \item This project is intended for \textit{educational purposes only} and must not be used for clinical decision-making.
+\end{itemize}
+
+% ── 8. Conclusion ─────────────────────────────────────────────────────────────
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a multi-model deep learning pipeline for skin lesion classification on HAM10000. Five architectures were trained with focal loss, WeightedRandomSampler, and dermatoscopy-specific augmentation, then combined into an ensemble with Differential Evolution-optimised weights. The ensemble achieves 86.1\% accuracy, 0.807 macro-F1, and 0.966 AUC-ROC. Future work will investigate uncertainty quantification, OOD detection, and cross-domain fine-tuning.
+
+% ── References ────────────────────────────────────────────────────────────────
+\bibliographystyle{unsrt}
+\begin{thebibliography}{99}
+
+\bibitem{tschandl2018ham10000}
+P.~Tschandl, C.~Rosendahl, and H.~Kittler,
+``The HAM10000 dataset,''
+\textit{Scientific Data}, vol.~5, p.~180161, 2018.
+
+\bibitem{esteva2017dermatologist}
+A.~Esteva et al.,
+``Dermatologist-level classification of skin cancer with deep neural networks,''
+\textit{Nature}, vol.~542, pp.~115--118, 2017.
+
+\bibitem{codella2018skin}
+N.~Codella et al.,
+``Skin lesion analysis toward melanoma detection: ISIC 2018,''
+\textit{arXiv:1902.03368}, 2019.
+
+\bibitem{tan2019efficientnet}
+M.~Tan and Q.~Le,
+``EfficientNet: Rethinking model scaling for CNNs,''
+in \textit{Proc.\ ICML}, 2019.
+
+\bibitem{dosovitskiy2020vit}
+A.~Dosovitskiy et al.,
+``An image is worth 16x16 words: Transformers for image recognition at scale,''
+in \textit{Proc.\ ICLR}, 2021.
+
+\bibitem{oquab2023dinov2}
+M.~Oquab et al.,
+``DINOv2: Learning robust visual features without supervision,''
+\textit{arXiv:2304.07193}, 2023.
+
+\bibitem{lin2017focal}
+T.-Y.~Lin et al.,
+``Focal loss for dense object detection,''
+in \textit{Proc.\ ICCV}, 2017.
+
+\bibitem{foret2021sam}
+P.~Foret et al.,
+``Sharpness-aware minimization for efficiently improving generalization,''
+in \textit{Proc.\ ICLR}, 2021.
+
+\bibitem{lin2017fpn}
+T.-Y.~Lin et al.,
+``Feature pyramid networks for object detection,''
+in \textit{Proc.\ CVPR}, 2017.
+
+\bibitem{buslaev2020albumentations}
+A.~Buslaev et al.,
+``Albumentations: Fast and flexible image augmentations,''
+\textit{Information}, vol.~11, p.~125, 2020.
+
+\bibitem{storn1997differential}
+R.~Storn and K.~Price,
+``Differential evolution,''
+\textit{J.\ Global Optimization}, vol.~11, pp.~341--359, 1997.
+
+\bibitem{selvaraju2017gradcam}
+R.~R.~Selvaraju et al.,
+``Grad-CAM: Visual explanations from deep networks,''
+in \textit{Proc.\ ICCV}, 2017.
+
+\end{thebibliography}
+
+% ── Full-width floats (span both columns, placed at page top) ─────────────────
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{confusion_matrices_normalised.png}
+  \caption{Normalised confusion matrices for all five models and the ensemble (deterministic TTA, $n=4$). Rows: true class; columns: predicted class. The ensemble (bottom-right) achieves the strongest diagonal dominance across all seven categories.}
+  \label{fig:confusion}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Common training hyperparameters shared by all models.}
+\label{tab:hparams}
+\begin{tabular}{ll}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Image size              & $224\times224$ \\
+Batch size              & 32 \\
+Max epochs              & 50 \\
+Early stopping patience & 15 epochs (metric: val macro-F1) \\
+Loss function           & Focal Loss ($\gamma=1.5$) + label smoothing ($\varepsilon=0.05$) \\
+LR schedule             & Linear warmup (5 ep.) $\to$ Cosine annealing \\
+Gradient clipping       & $\|\nabla\|\leq 2.0$ \\
+Mixed precision (AMP)   & \checkmark\ (all models) \\
+Seed                    & 42 \\
+Hardware                & NVIDIA RTX 4050 Laptop GPU (6\,GB VRAM) \\
+Framework               & PyTorch 2.5.1 + CUDA 12.1 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Test-set performance of all models and the ensemble (deterministic TTA, $n=4$). \textbf{Bold}: best per column. ECE: lower is better; all other metrics: higher is better.}
+\label{tab:results}
+\begin{tabular}{lccccrc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{AUC-ROC} & \textbf{ECE} & \textbf{Parameters} & \textbf{TTA} \\
+\midrule
+HAMCNN                        & 0.6953 & 0.5081 & 0.9278 & 0.2273          & 7,075,239  & 4 \\
+Enhanced CNN                  & 0.6946 & 0.5310 & 0.9344 & 0.2505          & 7,307,508  & 4 \\
+Double CNN                    & 0.6939 & 0.5163 & 0.9305 & 0.2500          & 7,348,615  & 4 \\
+ViT-DINOv2-Small              & 0.8532 & 0.7903 & 0.9531 & \textbf{0.1631} & 22,257,159 & 4 \\
+EfficientNetB3                & 0.8134 & 0.7036 & 0.9620 & 0.2461          & 11,489,327 & 4 \\
+\midrule
+\textbf{Ensemble (5 models)}  & \textbf{0.8609} & \textbf{0.8070} & \textbf{0.9657} & 0.2519 & --- & 4 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Per-class classification report for the weighted ensemble on the test set (TTA $n=4$).}
+\label{tab:per_class}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{Support} \\
+\midrule
+Actinic Keratosis    & 0.68 & 0.82 & 0.74 &     39 \\
+Basal Cell Carcinoma & 0.82 & 0.92 & 0.87 &     63 \\
+Benign Keratosis     & 0.65 & 0.75 & 0.70 &    118 \\
+Dermatofibroma       & 0.89 & 0.84 & 0.86 &     19 \\
+Melanoma             & 0.55 & 0.76 & 0.64 &    140 \\
+Melanocytic Nevi     & 0.97 & 0.88 & 0.92 &  1,036 \\
+Vascular Lesion      & 0.84 & 1.00 & 0.91 &     16 \\
+\midrule
+Macro avg            & 0.77 & 0.85 & 0.81 &  1,431 \\
+Weighted avg         & 0.88 & 0.86 & 0.87 &  1,431 \\
+\textbf{Accuracy}    &      &      & \textbf{0.86} & 1,431 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\end{document}

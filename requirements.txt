@@ -1,0 +1,28 @@
+# requirements.txt — HAM10000 Classifier Streamlit App
+# Install with: pip install -r requirements.txt
+
+# Web framework
+streamlit==1.35.0
+
+# Interactive image crop widget (Cropper.js wrapper)
+streamlit-cropper==0.3.0
+
+# Deep learning
+torch==2.3.1
+torchvision==0.18.1
+
+# Model hub (ViT-DINOv2 + EfficientNetB3 architectures)
+timm==1.0.3
+
+# Image augmentation pipeline
+albumentations==1.4.10
+
+# Scientific computing
+numpy==1.26.4
+Pillow==10.3.0
+
+# Visualisation (Plotly only — no matplotlib in the Streamlit UI)
+plotly==5.22.0
+
+# matplotlib is a transitive dep of inference_utils.py (mpl_cm for Grad-CAM colourmap)
+matplotlib==3.9.0

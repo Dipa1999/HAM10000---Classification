@@ -410,7 +410,7 @@ with st.sidebar:
         """
         **Giuseppe Di Pasquale**
         <br>✉️ [1.dipasquale.giuseppe@gmail.com](mailto:1.dipasquale.giuseppe@gmail.com)
-        <br>🐙 [github.com/username](https://github.com/Dipa1999)
+        <br>🐙 [github.com/Dipa1999](https://github.com/Dipa1999)
         """,
         unsafe_allow_html=True,
     )

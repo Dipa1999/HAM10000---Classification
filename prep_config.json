@@ -1,0 +1,14 @@
+{
+  "_comment": "prep_config.json | assumptions: paths are relative to the project root and copied from legacy NB01 (data/...); split_seed = legacy seed 42; ratios refer to the cleaned dataset; keys starting with '_' are ignored by prepare.py.",
+  "metadata_csv": "data/HAM10000_metadata.csv",
+  "img_dir_part1": "data/HAM10000_images_part_1",
+  "img_dir_part2": "data/HAM10000_images_part_2",
+  "val_ratio": 0.15,
+  "test_ratio": 0.15,
+  "split_seed": 42,
+  "drop_train_outliers": true,
+  "iqr_factor": 1.5,
+  "eda_columns": ["age", "sex", "localization"],
+  "n_folds": 20,
+  "split_tries": 30
+}

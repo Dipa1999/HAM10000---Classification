@@ -1,0 +1,139 @@
+{
+  "_comment": "spec keys: family, builder, optimizer(sam_adamw|adamw), lr{backbone,head}, weight_decay, grad_clip, grad_clip_unfreeze(null if freeze_epochs=0), grad_accum, freeze_epochs, dropout, arch{builder-specific params}",
+  "paths": {
+    "train_csv": "processed/train.csv",
+    "val_csv": "processed/val.csv",
+    "test_csv": "processed/test.csv",
+    "cache_dir": "processed",
+    "runs_dir": "runs"
+  },
+  "seed": 42,
+  "img_size": 224,
+  "norm_mean": [0.485, 0.456, 0.406],
+  "norm_std": [0.229, 0.224, 0.225],
+  "batch_size": 32,
+  "num_workers": 4,
+  "num_classes": 7,
+  "classes": ["akiec", "bcc", "bkl", "df", "mel", "nv", "vasc"],
+  "class_names": {
+    "akiec": "Actinic Keratosis",
+    "bcc": "Basal Cell Carcinoma",
+    "bkl": "Benign Keratosis",
+    "df": "Dermatofibroma",
+    "mel": "Melanoma",
+    "nv": "Melanocytic Nevi",
+    "vasc": "Vascular Lesion"
+  },
+  "num_epochs": 50,
+  "patience": 15,
+  "warmup_epochs": 5,
+  "label_smoothing": 0.05,
+  "focal_gamma": 1.5,
+  "sam_rho": 0.05,
+  "mixup_alpha": 0.4,
+  "p_cutmix": 0.5,
+  "clinical_similarity": {
+    "mel": ["nv", "bkl"],
+    "nv": ["mel", "bkl"],
+    "bkl": ["mel", "nv", "akiec"],
+    "akiec": ["bkl", "bcc"],
+    "bcc": ["akiec", "mel"],
+    "df": ["nv"],
+    "vasc": ["df"]
+  },
+  "tta_n": 4,
+  "severities": [2, 2.5, 1, 1, 3, 1, 1],
+  "ensemble_shrink": 0.3,
+  "tau_grid": [0, 1.5],
+  "models": {
+    "hamcnn": {
+      "family": "cnn",
+      "builder": "hamcnn",
+      "optimizer": "sam_adamw",
+      "lr": {"backbone": 2e-4, "head": 2e-4},
+      "weight_decay": 5e-4,
+      "grad_clip": 2.0,
+      "grad_clip_unfreeze": null,
+      "grad_accum": 1,
+      "freeze_epochs": 0,
+      "dropout": 0.4,
+      "arch": {
+        "stages": [[32, 2, true], [64, 2, true], [128, 3, true], [256, 3, true], [384, 2, true]],
+        "head_hidden": 256
+      }
+    },
+    "enhanced_cnn": {
+      "family": "cnn",
+      "builder": "enhanced_cnn",
+      "optimizer": "sam_adamw",
+      "lr": {"backbone": 1e-4, "head": 1e-4},
+      "weight_decay": 5e-4,
+      "grad_clip": 2.0,
+      "grad_clip_unfreeze": null,
+      "grad_accum": 1,
+      "freeze_epochs": 0,
+      "dropout": 0.4,
+      "arch": {
+        "stages": [[32, 2, true], [64, 2, true], [128, 3, true], [256, 3, true], [384, 2, true]],
+        "fpn_proj_dim": 128,
+        "stoch_depth_prob": 0.15,
+        "gem_p": 2.0
+      }
+    },
+    "double_cnn": {
+      "family": "cnn",
+      "builder": "double_cnn",
+      "optimizer": "sam_adamw",
+      "lr": {"backbone": 1e-4, "head": 1e-4},
+      "weight_decay": 5e-4,
+      "grad_clip": 2.0,
+      "grad_clip_unfreeze": null,
+      "grad_accum": 1,
+      "freeze_epochs": 0,
+      "dropout": 0.4,
+      "arch": {
+        "stem_stages": [[32, 2, true], [64, 2, true]],
+        "cls_stages": [[128, 3, true], [256, 3, true], [384, 2, true]],
+        "fpn_proj_dim": 128,
+        "stoch_depth_prob": 0.15,
+        "gem_p": 3.0,
+        "recon_lambda": 0.15
+      }
+    },
+    "vit_dinov2": {
+      "family": "transfer",
+      "builder": "vit",
+      "optimizer": "adamw",
+      "lr": {"backbone": 2e-6, "head": 5e-4},
+      "weight_decay": 1e-2,
+      "grad_clip": 1.0,
+      "grad_clip_unfreeze": 0.5,
+      "grad_accum": 1,
+      "freeze_epochs": 5,
+      "dropout": 0.3,
+      "arch": {
+        "timm_name": "vit_small_patch14_dinov2",
+        "pretrained": true,
+        "head_hidden": 512,
+        "grad_checkpointing": false
+      }
+    },
+    "efficientnet_b3": {
+      "family": "transfer",
+      "builder": "efficientnet",
+      "optimizer": "adamw",
+      "lr": {"backbone": 5e-5, "head": 5e-4},
+      "weight_decay": 1e-2,
+      "grad_clip": 2.0,
+      "grad_clip_unfreeze": 0.5,
+      "grad_accum": 2,
+      "freeze_epochs": 5,
+      "dropout": 0.4,
+      "arch": {
+        "timm_name": "efficientnet_b3",
+        "pretrained": true,
+        "head_hidden": 512
+      }
+    }
+  }
+}

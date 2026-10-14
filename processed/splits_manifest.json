@@ -1,0 +1,1652 @@
+{
+  "splits_hash": "0c88c657",
+  "csv_md5": {
+    "train": "fd1e7518bb3a16db682887c362ef6703",
+    "val": "15822e519d5a0666012b89627bc2ebff",
+    "test": "2466f1d0932fea542616df353f2faffd"
+  },
+  "rows": {
+    "train": 6802,
+    "val": 1502,
+    "test": 1503,
+    "total": 9807,
+    "metadata": 10015,
+    "after_cleaning": 10013
+  },
+  "ratios": {
+    "train": 0.6936,
+    "val": 0.1532,
+    "test": 0.1533
+  },
+  "n_splits": {
+    "folds": 20,
+    "test": 3,
+    "val": 3,
+    "seed": 70
+  },
+  "class_counts": {
+    "train": {
+      "akiec": 227,
+      "bcc": 357,
+      "bkl": 750,
+      "df": 81,
+      "mel": 727,
+      "nv": 4563,
+      "vasc": 97
+    },
+    "val": {
+      "akiec": 49,
+      "bcc": 77,
+      "bkl": 165,
+      "df": 17,
+      "mel": 166,
+      "nv": 1007,
+      "vasc": 21
+    },
+    "test": {
+      "akiec": 49,
+      "bcc": 78,
+      "bkl": 164,
+      "df": 17,
+      "mel": 168,
+      "nv": 1006,
+      "vasc": 21
+    }
+  },
+  "removal_log": {
+    "missing_filepath": {
+      "n": 0,
+      "by_class": {
+        "akiec": 0,
+        "bcc": 0,
+        "bkl": 0,
+        "df": 0,
+        "mel": 0,
+        "nv": 0,
+        "vasc": 0
+      }
+    },
+    "duplicate_image_id": {
+      "n": 0,
+      "by_class": {
+        "akiec": 0,
+        "bcc": 0,
+        "bkl": 0,
+        "df": 0,
+        "mel": 0,
+        "nv": 0,
+        "vasc": 0
+      }
+    },
+    "unreadable_file": {
+      "n": 0,
+      "by_class": {
+        "akiec": 0,
+        "bcc": 0,
+        "bkl": 0,
+        "df": 0,
+        "mel": 0,
+        "nv": 0,
+        "vasc": 0
+      }
+    },
+    "duplicate_file_md5": {
+      "n": 2,
+      "by_class": {
+        "akiec": 0,
+        "bcc": 0,
+        "bkl": 0,
+        "df": 0,
+        "mel": 0,
+        "nv": 2,
+        "vasc": 0
+      }
+    },
+    "undecodable_image": {
+      "n": 0,
+      "by_class": {
+        "akiec": 0,
+        "bcc": 0,
+        "bkl": 0,
+        "df": 0,
+        "mel": 0,
+        "nv": 0,
+        "vasc": 0
+      }
+    },
+    "train_outlier_flag": {
+      "n": 206,
+      "by_class": {
+        "akiec": 2,
+        "bcc": 2,
+        "bkl": 20,
+        "df": 0,
+        "mel": 52,
+        "nv": 127,
+        "vasc": 3
+      },
+      "rows": [
+        {
+          "image_id": "ISIC_0027850",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027850.jpg",
+          "brightness": 153.49,
+          "contrast": 66.6894
+        },
+        {
+          "image_id": "ISIC_0032343",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032343.jpg",
+          "brightness": 121.7907,
+          "contrast": 65.2971
+        },
+        {
+          "image_id": "ISIC_0027815",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027815.jpg",
+          "brightness": 140.4265,
+          "contrast": 76.5694
+        },
+        {
+          "image_id": "ISIC_0029683",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029683.jpg",
+          "brightness": 163.5971,
+          "contrast": 66.329
+        },
+        {
+          "image_id": "ISIC_0025180",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025180.jpg",
+          "brightness": 172.0575,
+          "contrast": 60.8642
+        },
+        {
+          "image_id": "ISIC_0026107",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026107.jpg",
+          "brightness": 155.3948,
+          "contrast": 71.0294
+        },
+        {
+          "image_id": "ISIC_0034031",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034031.jpg",
+          "brightness": 96.8707,
+          "contrast": 25.2499
+        },
+        {
+          "image_id": "ISIC_0034259",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034259.jpg",
+          "brightness": 101.9125,
+          "contrast": 37.6908
+        },
+        {
+          "image_id": "ISIC_0029682",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029682.jpg",
+          "brightness": 184.3643,
+          "contrast": 56.4897
+        },
+        {
+          "image_id": "ISIC_0033642",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033642.jpg",
+          "brightness": 146.5085,
+          "contrast": 61.2993
+        },
+        {
+          "image_id": "ISIC_0030124",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030124.jpg",
+          "brightness": 151.9995,
+          "contrast": 59.7479
+        },
+        {
+          "image_id": "ISIC_0029100",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029100.jpg",
+          "brightness": 179.4408,
+          "contrast": 67.5049
+        },
+        {
+          "image_id": "ISIC_0027606",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027606.jpg",
+          "brightness": 164.6768,
+          "contrast": 57.9973
+        },
+        {
+          "image_id": "ISIC_0026606",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026606.jpg",
+          "brightness": 211.189,
+          "contrast": 36.5751
+        },
+        {
+          "image_id": "ISIC_0025986",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025986.jpg",
+          "brightness": 193.0441,
+          "contrast": 61.0636
+        },
+        {
+          "image_id": "ISIC_0024893",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024893.jpg",
+          "brightness": 101.8942,
+          "contrast": 68.2361
+        },
+        {
+          "image_id": "ISIC_0025851",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025851.jpg",
+          "brightness": 127.8253,
+          "contrast": 56.358
+        },
+        {
+          "image_id": "ISIC_0033270",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033270.jpg",
+          "brightness": 183.18,
+          "contrast": 56.4023
+        },
+        {
+          "image_id": "ISIC_0033949",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033949.jpg",
+          "brightness": 157.8506,
+          "contrast": 60.88
+        },
+        {
+          "image_id": "ISIC_0032773",
+          "dx": "bkl",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032773.jpg",
+          "brightness": 149.1327,
+          "contrast": 62.8766
+        },
+        {
+          "image_id": "ISIC_0026993",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026993.jpg",
+          "brightness": 180.8407,
+          "contrast": 67.0349
+        },
+        {
+          "image_id": "ISIC_0029575",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029575.jpg",
+          "brightness": 155.4422,
+          "contrast": 61.7198
+        },
+        {
+          "image_id": "ISIC_0028361",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028361.jpg",
+          "brightness": 161.9802,
+          "contrast": 64.9785
+        },
+        {
+          "image_id": "ISIC_0027043",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027043.jpg",
+          "brightness": 214.9704,
+          "contrast": 38.6333
+        },
+        {
+          "image_id": "ISIC_0027174",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027174.jpg",
+          "brightness": 216.0429,
+          "contrast": 21.8292
+        },
+        {
+          "image_id": "ISIC_0025277",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025277.jpg",
+          "brightness": 129.6604,
+          "contrast": 67.927
+        },
+        {
+          "image_id": "ISIC_0030211",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030211.jpg",
+          "brightness": 150.6805,
+          "contrast": 64.8437
+        },
+        {
+          "image_id": "ISIC_0024898",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024898.jpg",
+          "brightness": 185.4078,
+          "contrast": 62.7061
+        },
+        {
+          "image_id": "ISIC_0027102",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027102.jpg",
+          "brightness": 173.738,
+          "contrast": 65.3928
+        },
+        {
+          "image_id": "ISIC_0024732",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024732.jpg",
+          "brightness": 165.4534,
+          "contrast": 58.7904
+        },
+        {
+          "image_id": "ISIC_0033946",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033946.jpg",
+          "brightness": 120.0495,
+          "contrast": 56.6763
+        },
+        {
+          "image_id": "ISIC_0033369",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033369.jpg",
+          "brightness": 128.5912,
+          "contrast": 61.6973
+        },
+        {
+          "image_id": "ISIC_0032447",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032447.jpg",
+          "brightness": 174.5853,
+          "contrast": 66.1757
+        },
+        {
+          "image_id": "ISIC_0033655",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033655.jpg",
+          "brightness": 153.0936,
+          "contrast": 73.2346
+        },
+        {
+          "image_id": "ISIC_0033831",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033831.jpg",
+          "brightness": 168.7471,
+          "contrast": 63.754
+        },
+        {
+          "image_id": "ISIC_0033362",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033362.jpg",
+          "brightness": 158.6127,
+          "contrast": 62.1852
+        },
+        {
+          "image_id": "ISIC_0032940",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032940.jpg",
+          "brightness": 119.3931,
+          "contrast": 59.8928
+        },
+        {
+          "image_id": "ISIC_0033299",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033299.jpg",
+          "brightness": 127.813,
+          "contrast": 64.56
+        },
+        {
+          "image_id": "ISIC_0033651",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033651.jpg",
+          "brightness": 135.5151,
+          "contrast": 58.996
+        },
+        {
+          "image_id": "ISIC_0027306",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027306.jpg",
+          "brightness": 151.2643,
+          "contrast": 58.1772
+        },
+        {
+          "image_id": "ISIC_0032526",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032526.jpg",
+          "brightness": 153.0927,
+          "contrast": 65.009
+        },
+        {
+          "image_id": "ISIC_0028520",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028520.jpg",
+          "brightness": 182.4165,
+          "contrast": 73.5538
+        },
+        {
+          "image_id": "ISIC_0033114",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033114.jpg",
+          "brightness": 155.9288,
+          "contrast": 62.1337
+        },
+        {
+          "image_id": "ISIC_0033394",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033394.jpg",
+          "brightness": 140.2123,
+          "contrast": 65.6396
+        },
+        {
+          "image_id": "ISIC_0034233",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034233.jpg",
+          "brightness": 157.7935,
+          "contrast": 61.0982
+        },
+        {
+          "image_id": "ISIC_0033638",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033638.jpg",
+          "brightness": 219.1792,
+          "contrast": 24.1689
+        },
+        {
+          "image_id": "ISIC_0033805",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033805.jpg",
+          "brightness": 222.0609,
+          "contrast": 34.0542
+        },
+        {
+          "image_id": "ISIC_0033302",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033302.jpg",
+          "brightness": 178.1667,
+          "contrast": 65.7514
+        },
+        {
+          "image_id": "ISIC_0033885",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033885.jpg",
+          "brightness": 141.0878,
+          "contrast": 78.9635
+        },
+        {
+          "image_id": "ISIC_0032424",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032424.jpg",
+          "brightness": 127.602,
+          "contrast": 68.702
+        },
+        {
+          "image_id": "ISIC_0028584",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028584.jpg",
+          "brightness": 121.374,
+          "contrast": 64.1066
+        },
+        {
+          "image_id": "ISIC_0024640",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024640.jpg",
+          "brightness": 97.103,
+          "contrast": 60.3397
+        },
+        {
+          "image_id": "ISIC_0029914",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029914.jpg",
+          "brightness": 148.9065,
+          "contrast": 60.1014
+        },
+        {
+          "image_id": "ISIC_0025524",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025524.jpg",
+          "brightness": 89.9442,
+          "contrast": 51.9981
+        },
+        {
+          "image_id": "ISIC_0025963",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025963.jpg",
+          "brightness": 58.2223,
+          "contrast": 50.5714
+        },
+        {
+          "image_id": "ISIC_0025121",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025121.jpg",
+          "brightness": 66.7773,
+          "contrast": 56.5678
+        },
+        {
+          "image_id": "ISIC_0030187",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030187.jpg",
+          "brightness": 110.9967,
+          "contrast": 68.796
+        },
+        {
+          "image_id": "ISIC_0030970",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030970.jpg",
+          "brightness": 150.7822,
+          "contrast": 57.0713
+        },
+        {
+          "image_id": "ISIC_0027620",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027620.jpg",
+          "brightness": 166.0216,
+          "contrast": 56.0837
+        },
+        {
+          "image_id": "ISIC_0028965",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028965.jpg",
+          "brightness": 121.1975,
+          "contrast": 74.5773
+        },
+        {
+          "image_id": "ISIC_0030356",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030356.jpg",
+          "brightness": 147.204,
+          "contrast": 57.2493
+        },
+        {
+          "image_id": "ISIC_0025145",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025145.jpg",
+          "brightness": 103.1591,
+          "contrast": 63.1209
+        },
+        {
+          "image_id": "ISIC_0028228",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028228.jpg",
+          "brightness": 155.0638,
+          "contrast": 60.3225
+        },
+        {
+          "image_id": "ISIC_0027171",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027171.jpg",
+          "brightness": 174.1786,
+          "contrast": 63.0049
+        },
+        {
+          "image_id": "ISIC_0026207",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026207.jpg",
+          "brightness": 201.5442,
+          "contrast": 64.0284
+        },
+        {
+          "image_id": "ISIC_0028718",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028718.jpg",
+          "brightness": 171.7432,
+          "contrast": 60.624
+        },
+        {
+          "image_id": "ISIC_0027442",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027442.jpg",
+          "brightness": 167.4478,
+          "contrast": 60.3336
+        },
+        {
+          "image_id": "ISIC_0029319",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029319.jpg",
+          "brightness": 166.2981,
+          "contrast": 56.2988
+        },
+        {
+          "image_id": "ISIC_0029157",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029157.jpg",
+          "brightness": 166.8609,
+          "contrast": 60.3742
+        },
+        {
+          "image_id": "ISIC_0027742",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027742.jpg",
+          "brightness": 186.016,
+          "contrast": 56.667
+        },
+        {
+          "image_id": "ISIC_0027163",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027163.jpg",
+          "brightness": 175.2075,
+          "contrast": 58.0085
+        },
+        {
+          "image_id": "ISIC_0033254",
+          "dx": "vasc",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033254.jpg",
+          "brightness": 152.7001,
+          "contrast": 56.8875
+        },
+        {
+          "image_id": "ISIC_0031648",
+          "dx": "vasc",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031648.jpg",
+          "brightness": 160.7315,
+          "contrast": 73.0133
+        },
+        {
+          "image_id": "ISIC_0033565",
+          "dx": "vasc",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033565.jpg",
+          "brightness": 172.2127,
+          "contrast": 61.3856
+        },
+        {
+          "image_id": "ISIC_0031527",
+          "dx": "bcc",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031527.jpg",
+          "brightness": 138.3374,
+          "contrast": 56.1192
+        },
+        {
+          "image_id": "ISIC_0033468",
+          "dx": "bcc",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033468.jpg",
+          "brightness": 160.2175,
+          "contrast": 65.426
+        },
+        {
+          "image_id": "ISIC_0031503",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031503.jpg",
+          "brightness": 89.3193,
+          "contrast": 15.7374
+        },
+        {
+          "image_id": "ISIC_0024415",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024415.jpg",
+          "brightness": 102.3899,
+          "contrast": 32.5808
+        },
+        {
+          "image_id": "ISIC_0025161",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025161.jpg",
+          "brightness": 172.1693,
+          "contrast": 59.9969
+        },
+        {
+          "image_id": "ISIC_0024945",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024945.jpg",
+          "brightness": 81.2983,
+          "contrast": 39.144
+        },
+        {
+          "image_id": "ISIC_0030016",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030016.jpg",
+          "brightness": 213.5514,
+          "contrast": 14.9075
+        },
+        {
+          "image_id": "ISIC_0028682",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028682.jpg",
+          "brightness": 212.0069,
+          "contrast": 17.723
+        },
+        {
+          "image_id": "ISIC_0028594",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028594.jpg",
+          "brightness": 88.9987,
+          "contrast": 24.215
+        },
+        {
+          "image_id": "ISIC_0028821",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028821.jpg",
+          "brightness": 86.7592,
+          "contrast": 30.5779
+        },
+        {
+          "image_id": "ISIC_0032336",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032336.jpg",
+          "brightness": 214.2848,
+          "contrast": 16.8021
+        },
+        {
+          "image_id": "ISIC_0030477",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030477.jpg",
+          "brightness": 211.0713,
+          "contrast": 30.5261
+        },
+        {
+          "image_id": "ISIC_0027019",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027019.jpg",
+          "brightness": 95.7596,
+          "contrast": 46.8726
+        },
+        {
+          "image_id": "ISIC_0026929",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026929.jpg",
+          "brightness": 102.1992,
+          "contrast": 38.6585
+        },
+        {
+          "image_id": "ISIC_0029168",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029168.jpg",
+          "brightness": 142.6859,
+          "contrast": 55.9601
+        },
+        {
+          "image_id": "ISIC_0025698",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025698.jpg",
+          "brightness": 100.1068,
+          "contrast": 45.4264
+        },
+        {
+          "image_id": "ISIC_0027741",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027741.jpg",
+          "brightness": 103.5626,
+          "contrast": 29.342
+        },
+        {
+          "image_id": "ISIC_0027773",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027773.jpg",
+          "brightness": 121.9327,
+          "contrast": 56.4448
+        },
+        {
+          "image_id": "ISIC_0029509",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029509.jpg",
+          "brightness": 102.0796,
+          "contrast": 25.5043
+        },
+        {
+          "image_id": "ISIC_0031906",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031906.jpg",
+          "brightness": 88.2645,
+          "contrast": 31.5157
+        },
+        {
+          "image_id": "ISIC_0032376",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032376.jpg",
+          "brightness": 131.0193,
+          "contrast": 60.4337
+        },
+        {
+          "image_id": "ISIC_0027640",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027640.jpg",
+          "brightness": 176.9707,
+          "contrast": 70.8367
+        },
+        {
+          "image_id": "ISIC_0032985",
+          "dx": "mel",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032985.jpg",
+          "brightness": 170.4115,
+          "contrast": 60.3766
+        },
+        {
+          "image_id": "ISIC_0029985",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029985.jpg",
+          "brightness": 130.8948,
+          "contrast": 65.6835
+        },
+        {
+          "image_id": "ISIC_0024891",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024891.jpg",
+          "brightness": 156.3257,
+          "contrast": 57.8925
+        },
+        {
+          "image_id": "ISIC_0024697",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024697.jpg",
+          "brightness": 148.0285,
+          "contrast": 67.6615
+        },
+        {
+          "image_id": "ISIC_0027361",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027361.jpg",
+          "brightness": 98.9682,
+          "contrast": 73.0898
+        },
+        {
+          "image_id": "ISIC_0025823",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025823.jpg",
+          "brightness": 166.5002,
+          "contrast": 56.8827
+        },
+        {
+          "image_id": "ISIC_0033745",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033745.jpg",
+          "brightness": 102.9072,
+          "contrast": 49.7291
+        },
+        {
+          "image_id": "ISIC_0025352",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025352.jpg",
+          "brightness": 165.6432,
+          "contrast": 62.3863
+        },
+        {
+          "image_id": "ISIC_0033048",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033048.jpg",
+          "brightness": 143.6098,
+          "contrast": 56.627
+        },
+        {
+          "image_id": "ISIC_0029553",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029553.jpg",
+          "brightness": 215.4947,
+          "contrast": 36.1216
+        },
+        {
+          "image_id": "ISIC_0029953",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029953.jpg",
+          "brightness": 173.9186,
+          "contrast": 57.4924
+        },
+        {
+          "image_id": "ISIC_0033316",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033316.jpg",
+          "brightness": 148.047,
+          "contrast": 56.1911
+        },
+        {
+          "image_id": "ISIC_0025456",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025456.jpg",
+          "brightness": 213.62,
+          "contrast": 29.489
+        },
+        {
+          "image_id": "ISIC_0033625",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033625.jpg",
+          "brightness": 168.9414,
+          "contrast": 55.649
+        },
+        {
+          "image_id": "ISIC_0028110",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028110.jpg",
+          "brightness": 225.1907,
+          "contrast": 45.0414
+        },
+        {
+          "image_id": "ISIC_0030899",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030899.jpg",
+          "brightness": 179.7339,
+          "contrast": 56.9414
+        },
+        {
+          "image_id": "ISIC_0031757",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031757.jpg",
+          "brightness": 192.805,
+          "contrast": 63.1465
+        },
+        {
+          "image_id": "ISIC_0033459",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033459.jpg",
+          "brightness": 141.1589,
+          "contrast": 58.6477
+        },
+        {
+          "image_id": "ISIC_0032640",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032640.jpg",
+          "brightness": 144.0836,
+          "contrast": 56.6734
+        },
+        {
+          "image_id": "ISIC_0033162",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033162.jpg",
+          "brightness": 153.3246,
+          "contrast": 56.9832
+        },
+        {
+          "image_id": "ISIC_0034105",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034105.jpg",
+          "brightness": 89.5739,
+          "contrast": 27.3718
+        },
+        {
+          "image_id": "ISIC_0032728",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032728.jpg",
+          "brightness": 104.5498,
+          "contrast": 19.5945
+        },
+        {
+          "image_id": "ISIC_0033650",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033650.jpg",
+          "brightness": 134.416,
+          "contrast": 60.3729
+        },
+        {
+          "image_id": "ISIC_0032521",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032521.jpg",
+          "brightness": 128.9357,
+          "contrast": 56.2745
+        },
+        {
+          "image_id": "ISIC_0032674",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032674.jpg",
+          "brightness": 134.0796,
+          "contrast": 57.6224
+        },
+        {
+          "image_id": "ISIC_0033906",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033906.jpg",
+          "brightness": 101.7647,
+          "contrast": 33.1517
+        },
+        {
+          "image_id": "ISIC_0034210",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034210.jpg",
+          "brightness": 101.9296,
+          "contrast": 25.7934
+        },
+        {
+          "image_id": "ISIC_0033427",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033427.jpg",
+          "brightness": 103.8173,
+          "contrast": 64.8395
+        },
+        {
+          "image_id": "ISIC_0033948",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033948.jpg",
+          "brightness": 152.1628,
+          "contrast": 60.6692
+        },
+        {
+          "image_id": "ISIC_0033694",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033694.jpg",
+          "brightness": 150.5395,
+          "contrast": 55.8348
+        },
+        {
+          "image_id": "ISIC_0033590",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033590.jpg",
+          "brightness": 104.5462,
+          "contrast": 47.7639
+        },
+        {
+          "image_id": "ISIC_0032794",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032794.jpg",
+          "brightness": 169.1445,
+          "contrast": 59.7578
+        },
+        {
+          "image_id": "ISIC_0032801",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032801.jpg",
+          "brightness": 169.6357,
+          "contrast": 60.3151
+        },
+        {
+          "image_id": "ISIC_0032530",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032530.jpg",
+          "brightness": 184.3892,
+          "contrast": 69.2538
+        },
+        {
+          "image_id": "ISIC_0033249",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033249.jpg",
+          "brightness": 187.9803,
+          "contrast": 56.7488
+        },
+        {
+          "image_id": "ISIC_0034213",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034213.jpg",
+          "brightness": 229.0312,
+          "contrast": 37.9422
+        },
+        {
+          "image_id": "ISIC_0032561",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032561.jpg",
+          "brightness": 197.7541,
+          "contrast": 59.5319
+        },
+        {
+          "image_id": "ISIC_0033839",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033839.jpg",
+          "brightness": 227.1544,
+          "contrast": 30.9137
+        },
+        {
+          "image_id": "ISIC_0026279",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026279.jpg",
+          "brightness": 170.6631,
+          "contrast": 73.6195
+        },
+        {
+          "image_id": "ISIC_0032601",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032601.jpg",
+          "brightness": 212.1985,
+          "contrast": 20.5429
+        },
+        {
+          "image_id": "ISIC_0028829",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028829.jpg",
+          "brightness": 170.8846,
+          "contrast": 55.6502
+        },
+        {
+          "image_id": "ISIC_0032944",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032944.jpg",
+          "brightness": 216.9618,
+          "contrast": 24.0955
+        },
+        {
+          "image_id": "ISIC_0033149",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033149.jpg",
+          "brightness": 156.8419,
+          "contrast": 55.7029
+        },
+        {
+          "image_id": "ISIC_0032627",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032627.jpg",
+          "brightness": 104.4274,
+          "contrast": 54.5165
+        },
+        {
+          "image_id": "ISIC_0028591",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028591.jpg",
+          "brightness": 178.2716,
+          "contrast": 69.5027
+        },
+        {
+          "image_id": "ISIC_0032943",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032943.jpg",
+          "brightness": 163.1684,
+          "contrast": 68.965
+        },
+        {
+          "image_id": "ISIC_0032966",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032966.jpg",
+          "brightness": 220.0768,
+          "contrast": 33.9855
+        },
+        {
+          "image_id": "ISIC_0033864",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033864.jpg",
+          "brightness": 178.148,
+          "contrast": 65.9683
+        },
+        {
+          "image_id": "ISIC_0033086",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033086.jpg",
+          "brightness": 150.4261,
+          "contrast": 65.5638
+        },
+        {
+          "image_id": "ISIC_0032926",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032926.jpg",
+          "brightness": 165.9043,
+          "contrast": 57.7108
+        },
+        {
+          "image_id": "ISIC_0033757",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033757.jpg",
+          "brightness": 114.4319,
+          "contrast": 64.4098
+        },
+        {
+          "image_id": "ISIC_0029775",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029775.jpg",
+          "brightness": 148.8111,
+          "contrast": 64.998
+        },
+        {
+          "image_id": "ISIC_0024608",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024608.jpg",
+          "brightness": 145.2646,
+          "contrast": 58.6482
+        },
+        {
+          "image_id": "ISIC_0026049",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026049.jpg",
+          "brightness": 146.7368,
+          "contrast": 60.6853
+        },
+        {
+          "image_id": "ISIC_0029222",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029222.jpg",
+          "brightness": 129.7622,
+          "contrast": 75.2972
+        },
+        {
+          "image_id": "ISIC_0030841",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030841.jpg",
+          "brightness": 146.0132,
+          "contrast": 62.6926
+        },
+        {
+          "image_id": "ISIC_0027933",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027933.jpg",
+          "brightness": 145.8367,
+          "contrast": 72.4884
+        },
+        {
+          "image_id": "ISIC_0028513",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028513.jpg",
+          "brightness": 143.1337,
+          "contrast": 71.5546
+        },
+        {
+          "image_id": "ISIC_0024936",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024936.jpg",
+          "brightness": 93.8782,
+          "contrast": 59.2155
+        },
+        {
+          "image_id": "ISIC_0029572",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029572.jpg",
+          "brightness": 185.0016,
+          "contrast": 56.0513
+        },
+        {
+          "image_id": "ISIC_0027398",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027398.jpg",
+          "brightness": 191.3025,
+          "contrast": 60.0853
+        },
+        {
+          "image_id": "ISIC_0025381",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025381.jpg",
+          "brightness": 218.5708,
+          "contrast": 24.616
+        },
+        {
+          "image_id": "ISIC_0029027",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029027.jpg",
+          "brightness": 208.8709,
+          "contrast": 61.6535
+        },
+        {
+          "image_id": "ISIC_0028981",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028981.jpg",
+          "brightness": 103.8018,
+          "contrast": 26.3288
+        },
+        {
+          "image_id": "ISIC_0024587",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024587.jpg",
+          "brightness": 117.495,
+          "contrast": 56.3003
+        },
+        {
+          "image_id": "ISIC_0029666",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0029666.jpg",
+          "brightness": 96.5923,
+          "contrast": 46.7895
+        },
+        {
+          "image_id": "ISIC_0027658",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027658.jpg",
+          "brightness": 136.0877,
+          "contrast": 74.8061
+        },
+        {
+          "image_id": "ISIC_0028678",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028678.jpg",
+          "brightness": 130.762,
+          "contrast": 72.1877
+        },
+        {
+          "image_id": "ISIC_0031621",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031621.jpg",
+          "brightness": 148.9165,
+          "contrast": 56.2907
+        },
+        {
+          "image_id": "ISIC_0031822",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031822.jpg",
+          "brightness": 167.0482,
+          "contrast": 60.8735
+        },
+        {
+          "image_id": "ISIC_0030654",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030654.jpg",
+          "brightness": 162.33,
+          "contrast": 59.2091
+        },
+        {
+          "image_id": "ISIC_0031725",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031725.jpg",
+          "brightness": 141.0451,
+          "contrast": 56.0799
+        },
+        {
+          "image_id": "ISIC_0025518",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025518.jpg",
+          "brightness": 181.3312,
+          "contrast": 65.6135
+        },
+        {
+          "image_id": "ISIC_0026101",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026101.jpg",
+          "brightness": 211.8534,
+          "contrast": 63.1241
+        },
+        {
+          "image_id": "ISIC_0031070",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031070.jpg",
+          "brightness": 224.1087,
+          "contrast": 36.1547
+        },
+        {
+          "image_id": "ISIC_0030819",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030819.jpg",
+          "brightness": 124.3015,
+          "contrast": 64.8268
+        },
+        {
+          "image_id": "ISIC_0030592",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030592.jpg",
+          "brightness": 176.3366,
+          "contrast": 57.5906
+        },
+        {
+          "image_id": "ISIC_0028679",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028679.jpg",
+          "brightness": 186.6471,
+          "contrast": 69.4689
+        },
+        {
+          "image_id": "ISIC_0025013",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025013.jpg",
+          "brightness": 182.7977,
+          "contrast": 60.898
+        },
+        {
+          "image_id": "ISIC_0027988",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027988.jpg",
+          "brightness": 210.0369,
+          "contrast": 45.5551
+        },
+        {
+          "image_id": "ISIC_0027308",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027308.jpg",
+          "brightness": 167.6249,
+          "contrast": 58.3779
+        },
+        {
+          "image_id": "ISIC_0030082",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030082.jpg",
+          "brightness": 173.5185,
+          "contrast": 65.7079
+        },
+        {
+          "image_id": "ISIC_0027503",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027503.jpg",
+          "brightness": 222.432,
+          "contrast": 36.5784
+        },
+        {
+          "image_id": "ISIC_0026818",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026818.jpg",
+          "brightness": 209.6017,
+          "contrast": 55.2118
+        },
+        {
+          "image_id": "ISIC_0031076",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0031076.jpg",
+          "brightness": 165.192,
+          "contrast": 64.8321
+        },
+        {
+          "image_id": "ISIC_0027271",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027271.jpg",
+          "brightness": 208.9195,
+          "contrast": 37.3849
+        },
+        {
+          "image_id": "ISIC_0024684",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024684.jpg",
+          "brightness": 152.2402,
+          "contrast": 57.5449
+        },
+        {
+          "image_id": "ISIC_0028874",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028874.jpg",
+          "brightness": 164.1609,
+          "contrast": 74.7368
+        },
+        {
+          "image_id": "ISIC_0028592",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028592.jpg",
+          "brightness": 158.1401,
+          "contrast": 76.2732
+        },
+        {
+          "image_id": "ISIC_0028504",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028504.jpg",
+          "brightness": 220.3207,
+          "contrast": 27.5285
+        },
+        {
+          "image_id": "ISIC_0029208",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029208.jpg",
+          "brightness": 117.6678,
+          "contrast": 60.7943
+        },
+        {
+          "image_id": "ISIC_0025581",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025581.jpg",
+          "brightness": 133.1695,
+          "contrast": 73.2633
+        },
+        {
+          "image_id": "ISIC_0029247",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0029247.jpg",
+          "brightness": 178.4989,
+          "contrast": 60.455
+        },
+        {
+          "image_id": "ISIC_0024752",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0024752.jpg",
+          "brightness": 168.739,
+          "contrast": 72.3278
+        },
+        {
+          "image_id": "ISIC_0027729",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027729.jpg",
+          "brightness": 177.8549,
+          "contrast": 55.8631
+        },
+        {
+          "image_id": "ISIC_0025061",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025061.jpg",
+          "brightness": 217.4889,
+          "contrast": 17.6348
+        },
+        {
+          "image_id": "ISIC_0030404",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0030404.jpg",
+          "brightness": 145.3369,
+          "contrast": 66.1416
+        },
+        {
+          "image_id": "ISIC_0027311",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027311.jpg",
+          "brightness": 141.5334,
+          "contrast": 60.4778
+        },
+        {
+          "image_id": "ISIC_0025956",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0025956.jpg",
+          "brightness": 129.5158,
+          "contrast": 69.1444
+        },
+        {
+          "image_id": "ISIC_0028866",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028866.jpg",
+          "brightness": 153.0484,
+          "contrast": 57.5213
+        },
+        {
+          "image_id": "ISIC_0028252",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0028252.jpg",
+          "brightness": 136.9746,
+          "contrast": 60.8155
+        },
+        {
+          "image_id": "ISIC_0032880",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032880.jpg",
+          "brightness": 145.0656,
+          "contrast": 66.2412
+        },
+        {
+          "image_id": "ISIC_0032923",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032923.jpg",
+          "brightness": 152.2278,
+          "contrast": 58.6711
+        },
+        {
+          "image_id": "ISIC_0034302",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034302.jpg",
+          "brightness": 208.5801,
+          "contrast": 39.3416
+        },
+        {
+          "image_id": "ISIC_0033623",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0033623.jpg",
+          "brightness": 218.3915,
+          "contrast": 20.362
+        },
+        {
+          "image_id": "ISIC_0034080",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0034080.jpg",
+          "brightness": 215.9129,
+          "contrast": 43.8704
+        },
+        {
+          "image_id": "ISIC_0032273",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_2/ISIC_0032273.jpg",
+          "brightness": 176.8639,
+          "contrast": 67.855
+        },
+        {
+          "image_id": "ISIC_0027924",
+          "dx": "nv",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027924.jpg",
+          "brightness": 181.9524,
+          "contrast": 67.3712
+        },
+        {
+          "image_id": "ISIC_0026014",
+          "dx": "akiec",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0026014.jpg",
+          "brightness": 148.8607,
+          "contrast": 58.0223
+        },
+        {
+          "image_id": "ISIC_0027588",
+          "dx": "akiec",
+          "filepath": "data/HAM10000_images_part_1/ISIC_0027588.jpg",
+          "brightness": 130.8032,
+          "contrast": 61.4213
+        }
+      ]
+    }
+  },
+  "flag_thresholds": {
+    "age": [
+      2.5,
+      102.5
+    ],
+    "brightness": [
+      104.62461249999998,
+      208.48131250000003
+    ],
+    "contrast": [
+      -1.5397874999999992,
+      55.50631249999999
+    ]
+  },
+  "flag_counts": {
+    "train": {
+      "age_outlier": 34,
+      "bright_outlier": 61,
+      "contrast_outlier": 154
+    },
+    "val": {
+      "age_outlier": 2,
+      "bright_outlier": 12,
+      "contrast_outlier": 39
+    },
+    "test": {
+      "age_outlier": 3,
+      "bright_outlier": 12,
+      "contrast_outlier": 37
+    }
+  },
+  "train_flag_by_class": {
+    "bright_outlier": {
+      "akiec": 0,
+      "bcc": 0,
+      "bkl": 4,
+      "df": 0,
+      "mel": 9,
+      "nv": 48,
+      "vasc": 0
+    },
+    "contrast_outlier": {
+      "akiec": 2,
+      "bcc": 2,
+      "bkl": 17,
+      "df": 0,
+      "mel": 46,
+      "nv": 84,
+      "vasc": 3
+    },
+    "any_drop_flag": {
+      "akiec": 2,
+      "bcc": 2,
+      "bkl": 20,
+      "df": 0,
+      "mel": 52,
+      "nv": 127,
+      "vasc": 3
+    }
+  },
+  "prep_config": {
+    "metadata_csv": "data/HAM10000_metadata.csv",
+    "img_dir_part1": "data/HAM10000_images_part_1",
+    "img_dir_part2": "data/HAM10000_images_part_2",
+    "val_ratio": 0.15,
+    "test_ratio": 0.15,
+    "split_seed": 42,
+    "drop_train_outliers": true,
+    "iqr_factor": 1.5,
+    "eda_columns": [
+      "age",
+      "sex",
+      "localization"
+    ],
+    "n_folds": 20,
+    "split_tries": 30
+  },
+  "sklearn_version": "1.8.0"
+}

@@ -1,0 +1,68 @@
+# Dataset and generated artifacts
+data/
+processed/*
+!processed/splits_manifest.json
+runs/
+legacy/
+publish/
+release/
+*.zip
+
+# Weights, arrays and temporary files
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+*.tmp
+
+# Notebook PDF exports (local paths and outputs)
+/01_EDA_Preparation.pdf
+/02_Run_Pipeline.pdf
+
+# Development notes
+SPEC.md
+
+# LaTeX build files (report/*.tex and report/*.pdf are kept)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.lof
+report/*.lot
+report/*.bbl
+report/*.blg
+report/*.bcf
+report/*.run.xml
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment and secrets
+.env
+
+# IDE and OS
+.vscode/
+.idea/
+.directory
+.DS_Store
+Thumbs.db
+*~
+
+# R leftovers
+.Rhistory
+.RData

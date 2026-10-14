@@ -1,0 +1,409 @@
+% report.tex
+\documentclass[10pt,twocolumn]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{geometry}
+\geometry{a4paper, top=2cm, bottom=2cm, left=1.8cm, right=1.8cm, columnsep=0.6cm}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{authblk}
+
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+% \figfile{path}{width}{placeholder height}: image if present, framed placeholder otherwise
+\newcommand{\figfile}[3]{\IfFileExists{#1}{\includegraphics[width=#2]{#1}}{%
+  \fbox{\parbox[c][#3][c]{0.9\linewidth}{\centering\footnotesize\code{#1}}}}}
+
+% ── Title ─────────────────────────────────────────────────────────────────────
+\title{%
+  \large\textbf{Multi-Model Deep Learning for Dermoscopic\\
+  Skin Lesion Classification on HAM10000}
+}
+
+\author[1]{Giuseppe Di Pasquale}
+\date{}
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+% ── Abstract ──────────────────────────────────────────────────────────────────
+\begin{abstract}
+Automated classification of skin lesions from dermoscopic images is clinically relevant and technically difficult, because the lesion classes look alike and the class distribution is strongly skewed. This paper describes a complete pipeline on the HAM10000 dataset (10,015 images, seven diagnostic classes). Five models are trained under one recipe: three convolutional networks trained from scratch and two pretrained transfer models, a DINOv2 Vision Transformer and an EfficientNet-B3. The splits are grouped by lesion, the outlier filter is fitted on the training split only, and the calibration and ensemble weights are fitted on the validation split. On the test split, the best single model reaches a macro-F1 of 0.720 with an accuracy of 0.828, and the calibrated ensemble reaches a macro-F1 of 0.727 with an accuracy of 0.816. The ensemble's advantage in macro-F1 is small and was not tested for significance. The three from-scratch networks reach macro-F1 values between 0.469 and 0.479. Calibration lowers the ensemble's expected calibration error on test from 0.272 to 0.019.
+\end{abstract}
+
+\noindent\textbf{Keywords:} skin lesion classification, dermoscopy, CNN, Vision Transformer, DINOv2, EfficientNet, focal loss, ensemble calibration, HAM10000.
+
+% ── 1. Introduction ───────────────────────────────────────────────────────────
+\section{Introduction}
+\label{sec:intro}
+
+Skin cancer is among the most common cancers worldwide, and early diagnosis is one of the main factors in patient outcome. Dermoscopy improves the accuracy of visual inspection, but access to experienced dermatologists is uneven. Automated systems can support clinical decisions, especially where specialist care is scarce.
+
+The HAM10000 dataset \cite{tschandl2018ham10000} contains 10,015 dermoscopic images of seven lesion types. It poses two main difficulties. The first is that malignant and benign lesions can look very similar. The second is class imbalance: melanocytic nevi make up about 67\% of the images, while dermatofibroma and vascular lesions make up about 1\% each. Published results on this dataset are hard to compare, partly because the splitting, the handling of duplicate images and the use of validation data for selection differ from paper to paper \cite{cassidy2022,abhishek2024}.
+
+This paper documents one complete protocol and evaluates it from end to end. The work covers data cleaning, a lesion-grouped split, five architectures, post-hoc calibration and a weighted ensemble. The contributions are as follows. First, a split procedure that groups images by lesion and selects the split seed using label-only criteria. Second, a comparison of three networks trained from scratch with two transfer models, all trained under the same recipe. Third, a calibrated ensemble whose parameters are fitted on the validation split and that is evaluated once on the test split. The code is released under the MIT license.
+
+% ── 2. Related Work ───────────────────────────────────────────────────────────
+\section{Related Work}
+\label{sec:related}
+
+Early work showed that convolutional networks trained on large collections of clinical images can reach the level of dermatologists on specific tasks \cite{esteva2017dermatologist}. The ISIC challenges then provided shared benchmarks, including the HAM10000-based classification task, and most strong entries relied on ensembles and heavy augmentation \cite{codella2019isic}.
+
+Architectures have since moved in two directions. Scaled convolutional networks such as EfficientNet \cite{tan2019efficientnet} remain a strong choice for medium-sized image datasets. Vision Transformers \cite{dosovitskiy2021vit} reach competitive results when they are pretrained at scale, and self-supervised models such as DINOv2 \cite{oquab2024dinov2} produce features that transfer well to fine-grained tasks. Our transfer models use these two families.
+
+For the training recipe, we use focal loss \cite{lin2017focal} to reduce the weight of easy majority-class examples, sharpness-aware minimisation \cite{foret2021sam} for the networks trained from scratch, mixup and CutMix \cite{zhang2018mixup} as regularisers, and feature pyramid aggregation \cite{lin2017fpn} for multi-scale features. Temperature scaling \cite{guo2017calibration} is the calibration method we apply, and differential evolution \cite{storn1997differential} is the optimiser for ensemble weights.
+
+Two data issues shape how the results should be read. Duplicate and near-duplicate images have been documented in ISIC-derived datasets, which can make test scores optimistic when duplicates cross the split boundary \cite{cassidy2022,abhishek2024}. Performance gaps across skin tones have also been reported for dermatology models \cite{daneshjou2022}. This study does not detect near-duplicates, so both issues remain open here.
+
+% ── 3. Dataset & Preprocessing ────────────────────────────────────────────────
+\section{Dataset and Preprocessing}
+\label{sec:data}
+
+\subsection{Dataset}
+HAM10000 provides 10,015 dermoscopic images from 7,470 lesions. The seven classes are actinic keratosis (akiec), basal cell carcinoma (bcc), benign keratosis (bkl), dermatofibroma (df), melanoma (mel), melanocytic nevi (nv) and vascular lesion (vasc). The metadata columns age, sex and localisation are used only for exploratory analysis. The models receive the image alone.
+
+\subsection{Cleaning and Splitting}
+Cleaning removes files that are missing, unreadable, or duplicated by identifier or by MD5 hash. Two \code{nv} images share a hash with another image and are removed, which leaves 10,013 images. Each remaining image receives a brightness and a contrast value, computed as the mean and the standard deviation of the grey-level image.
+
+The split uses \code{StratifiedGroupKFold} with 20 folds. Images are grouped by \code{lesion_id}, so all images of one lesion stay in the same split, and the folds are stratified on the image-level labels. Three folds form the test split, three the validation split and fourteen the training split. We evaluated 30 candidate seeds, from 42 to 71. Each candidate was scored on how far its class proportions and split sizes deviate from the full dataset and from the nominal ratios. The score uses labels and sizes only, and model performance plays no role in it. Seed 70 gave the lowest score. The code checks that no lesion appears in two splits and that every class is present in every split.
+
+\subsection{Outlier Filtering}
+Brightness and contrast are filtered with interquartile-range bounds at $k=1.5$. The bounds are computed on the training split and then applied unchanged to validation and test. Training images outside the bounds are dropped, which removes 206 images. Validation and test images outside the bounds are kept, because the purpose of the filter is to clean the training data. The age flag is reported but never removes a row.
+
+Table~\ref{tab:splits} gives the class counts that result from these steps.
+
+
+
+
+
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Images per class and split after cleaning and training-outlier removal (9,807 images in total).}
+\label{tab:splits}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+\textbf{Split} & akiec & bcc & bkl & df & mel & nv & vasc & Total \\
+\midrule
+Train & 227 & 357 & 750 & 81 & 727 & 4,563 & 97 & 6,802 \\
+Validation & 49 & 77 & 165 & 17 & 166 & 1,007 & 21 & 1,502 \\
+Test & 49 & 78 & 164 & 17 & 168 & 1,006 & 21 & 1,503 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Class Imbalance and Augmentation}
+Imbalance is handled in two ways. Batches are drawn with a sampler that weights each image by the inverse frequency of its class, so each class appears about equally often in an epoch. The loss is a focal loss with $\gamma=1.5$ and label smoothing of 0.05.
+
+Training images are augmented with Albumentations \cite{buslaev2020albumentations}. The pipeline includes horizontal and vertical flips, rotations by multiples of 90 degrees, elastic, grid, and optical distortions, CLAHE, random shadows, color jitter, and coarse dropout. Every training batch is also mixed: with probability 0.5 by CutMix, and otherwise by a mixup with $\alpha=0.4$. In the mixup branch, each image is paired with a partner from a clinically similar class when one is available in the batch, and with a random partner otherwise. Validation and test images receive only resizing and ImageNet normalization. Images are cached once as $224\times224$ arrays and read through memory maps.
+
+% ── 4. Methods ────────────────────────────────────────────────────────────────
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Models}
+\textbf{HAMCNN} is a plain five-stage convolutional network with channel widths 32, 64, 128, 256 and 384. It has no skip connections. Each stage ends with max pooling. The head applies global average pooling, a 256-unit layer, dropout with $p=0.4$ and a seven-way output.
+
+\textbf{Enhanced CNN} uses residual blocks with stochastic depth (maximum drop probability 0.15) and CBAM attention in each stage. Its feature pyramid takes the outputs of three stages, projects each one to 128 channels and pools it with a generalised-mean layer whose exponent is learned. The three pooled vectors are concatenated before a 512-unit head.
+
+\textbf{Double CNN} has a shared stem of two stages, followed by a classification branch that uses the same pyramid and pooling as the enhanced network. A second branch reconstructs the input image from the stem features through a small transposed-convolution decoder. The training loss is
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_{\mathrm{focal}} + 0.15\,\mathcal{L}_{\mathrm{recon}},
+\end{equation}
+where the reconstruction target is the mixed input that the encoder actually receives. The auxiliary term is meant to keep low-level texture information in the stem. It was not tested by an ablation.
+
+\textbf{ViT-DINOv2} is the \code{vit_small_patch14_dinov2} backbone from timm, with the pretrained DINOv2 weights. A LayerNorm, a 512-unit GELU layer, dropout with $p=0.3$ and a linear output form the head.
+
+\textbf{EfficientNet-B3} is the timm EfficientNet-B3 with ImageNet weights. Its head has the same form as the ViT head, with dropout $p=0.4$.
+
+\subsection{Training}
+All models use bfloat16 autocast. Training runs for at most 50 epochs with batch size 32, and stops early when the validation macro-F1 has not improved for 15 epochs. The learning rate rises linearly for five epochs and then decays with a cosine schedule down to $10^{-6}$. The three networks trained from scratch use SAM with $\rho=0.05$ over AdamW. The two transfer models use AdamW, and their backbone is frozen for the first five epochs. Table~\ref{tab:config} lists the settings that differ between models. The gradient clip for the transfer models is smaller on the unfreeze epoch, which is epoch 6.
+
+All hyperparameters were fixed before the experiments and taken from the original notebook from which this code was derived. No search was carried out. Each model was trained once, with one seed.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Training configuration per model. Clip values in parentheses apply to the unfreeze epoch (epoch 6) only. Stop (best ep.) is the last epoch run and the epoch with the highest validation macro-F1.}
+\label{tab:config}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+Model & Optimiser & LR backbone & LR head & Weight decay & Clip & Accum. & Stop (best ep.) \\
+\midrule
+HAMCNN          & SAM-AdamW & $2{\cdot}10^{-4}$ & $2{\cdot}10^{-4}$ & $5{\cdot}10^{-4}$ & 2.0       & 1 & 50 (39) \\
+Enhanced CNN    & SAM-AdamW & $1{\cdot}10^{-4}$ & $1{\cdot}10^{-4}$ & $5{\cdot}10^{-4}$ & 2.0       & 1 & 50 (42) \\
+Double CNN      & SAM-AdamW & $1{\cdot}10^{-4}$ & $1{\cdot}10^{-4}$ & $5{\cdot}10^{-4}$ & 2.0       & 1 & 50 (50) \\
+ViT-DINOv2      & AdamW     & $2{\cdot}10^{-6}$ & $5{\cdot}10^{-4}$ & $10^{-2}$         & 1.0 (0.5) & 1 & 50 (49) \\
+EfficientNet-B3 & AdamW     & $5{\cdot}10^{-5}$ & $5{\cdot}10^{-4}$ & $10^{-2}$         & 2.0 (0.5) & 2 & 49 (34) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\subsection{Calibration and Ensemble}
+Calibration is fitted on the validation split, and the same procedure is then applied unchanged to the test split. It has four steps. First, each model receives one temperature, found by minimising the negative log-likelihood of its averaged validation probabilities. Second, the ensemble weights are found by differential evolution, which maximises the severity-weighted recall. The severity weights are 2, 2.5, 1, 1, 3, 1 and 1 for the classes in the order listed above. Because the objective is piecewise constant, a gradient method would not move from its starting point. The weights are normalised to sum to one and then shrunk toward uniform weights with a shrinkage factor of 0.3. Third, a logit adjustment $\tau\log\pi$ is added, where $\pi$ holds the training class frequencies and $\tau$ is chosen on a grid over $[0,1.5]$. Fourth, a final ensemble temperature is fitted.
+
+The validation fit produced the following values. The weights are 0.092 for HAMCNN, 0.198 for the enhanced CNN, 0.071 for the double CNN, 0.378 for ViT-DINOv2 and 0.262 for EfficientNet-B3. The model temperatures are 0.491, 0.436, 0.423, 0.540 and 0.448. The selected $\tau$ is 0, so the logit adjustment has no effect. The ensemble temperature is 0.690. The severity-weighted recall on validation is 9.01, out of a maximum of 11.5. The three networks trained from scratch together receive a weight of 0.361.
+
+Note that the fitting objective is severity-weighted recall, while the reported metric is macro-F1. The effect of this difference on the ensemble is not tested here.
+
+\subsection{Test-Time Augmentation}
+Predictions are averaged over four flipped views of each image: the original, a horizontal flip, a vertical flip and both flips. The softmax outputs of the four views are averaged. No stochastic test-time augmentation is used.
+
+\subsection{Grad-CAM}
+Grad-CAM \cite{selvaraju2017gradcam} is applied to the two transfer models. The target layer is the normalisation layer of the last transformer block for ViT-DINOv2, and the last stage of the backbone for EfficientNet-B3. The maps are computed for the class that the displayed model predicts.
+
+% ── 5. Experiments ────────────────────────────────────────────────────────────
+\section{Experiments and Results}
+\label{sec:results}
+
+\subsection{Metrics and Protocol}
+Models are trained on the training split only. The validation split is used for early stopping, for choosing the best checkpoint and for all post-hoc parameters. Validation metrics are therefore optimistic. The test split is read once, in a final evaluation run that uses the frozen calibration parameters. No model was retrained on training plus validation data.
+
+The primary metric is macro-F1. We also report accuracy, balanced accuracy (the mean per-class recall), the macro one-vs-rest AUC and the expected calibration error (ECE) with 15 bins. Per-class F1 scores are reported for analysis.
+
+\subsection{Training Dynamics}
+Figure~\ref{fig:curves} shows the training curves of all five models. The two transfer models reach a higher validation macro-F1 than the three networks trained from scratch within the first ten epochs. The unfreezing of the ViT backbone at epoch 6 coincides with a sharp rise in the pre-clip gradient norm, which reaches 44.4 and then remains between 23 and 36 for the rest of the run. Because the clip threshold is 1.0, clipping is active at nearly every step after unfreezing. EfficientNet-B3 stops at epoch 49 by early stopping, with its best validation score at epoch 34. The double CNN is still improving at epoch 50, so its curve has not levelled off within the training budget.
+
+\begin{figure}[H]
+  \centering
+  \figfile{curves_compared.png}{\linewidth}{0.45\linewidth}
+  \caption{Training curves for all models: loss, validation accuracy, validation macro-F1 and pre-clip gradient norm. The dotted line marks the end of warm-up and the dashed line the unfreeze epoch.}
+  \label{fig:curves}
+\end{figure}
+
+\subsection{Global Results}
+Table~\ref{tab:results} reports the test results after calibration. The ViT-DINOv2 model gives the highest accuracy and the lowest raw ECE. The calibrated ensemble gives the highest macro-F1, the highest balanced accuracy, the highest AUC and the lowest calibrated ECE. The ensemble's macro-F1 is 0.727 against 0.720 for ViT-DINOv2, and its accuracy is 0.816 against 0.828. These differences are small. Without a confidence interval or a repeated run, we cannot say whether they would hold on another split. With 17 \code{df} and 21 \code{vasc} images in the test split, one image changes recall by about 5.9 points for \code{df} and 4.8 points for \code{vasc}. 
+
+The three networks trained from scratch reach test macro-F1 values between 0.469 and 0.479. EfficientNet-B3 reaches 0.646. On the validation split, ViT-DINOv2 reaches macro-F1 0.788 and the ensemble 0.784. These validation values are optimistic, for the reasons given in Section~\ref{sec:results}.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Test-set results after calibration (1,503 images). Bold marks the best value per column. ECE raw is before calibration, ECE cal after it. Accuracy, macro-F1, balanced accuracy and AUC are higher-is-better; ECE is lower-is-better.}
+\label{tab:results}
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Bal.\ acc.} & \textbf{AUC} & \textbf{ECE raw} & \textbf{ECE cal} & \textbf{NLL cal} \\
+\midrule
+HAMCNN          & 0.635 & 0.469 & 0.547 & 0.895 & 0.174 & 0.091 & 0.894 \\
+Enhanced CNN    & 0.647 & 0.479 & 0.566 & 0.916 & 0.210 & 0.077 & 0.849 \\
+Double CNN      & 0.655 & 0.478 & 0.587 & 0.914 & 0.212 & 0.060 & 0.835 \\
+ViT-DINOv2      & \textbf{0.828} & 0.720 & 0.705 & 0.950 & \textbf{0.164} & 0.020 & 0.512 \\
+EfficientNet-B3 & 0.784 & 0.646 & 0.663 & 0.953 & 0.227 & 0.035 & 0.556 \\
+\midrule
+Ensemble (5 models) & 0.816 & \textbf{0.727} & \textbf{0.730} & \textbf{0.963} & 0.272 & \textbf{0.019} & \textbf{0.513} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Per-class Performance}
+Table~\ref{tab:perclass} gives the per-class F1 scores on test for every model. On test, the ensemble has the highest F1 on akiec (0.596), df (0.643) and vasc (0.927). ViT-DINOv2 is highest on bcc, bkl, mel and nv. The clearest difference is in vasc, where the ensemble reaches 0.927 against 0.872 for ViT-DINOv2, while the ensemble trails ViT-DINOv2 on bcc (0.729 against 0.755) and nv (0.902 against 0.915).
+
+Melanoma is the most difficult class for the ensemble in terms of precision. Its test precision is 0.502 at a recall of 0.720, so about half of the images assigned to melanoma belong to other classes. For ViT-DINOv2 the figures are 0.515 and 0.702. Basal cell carcinoma is recognised well: the ensemble reaches a recall of 0.795 and a precision of 0.674. Actinic keratosis is the weakest class for ViT-DINOv2, with a recall of 0.449 and a precision of 0.786. These per-class values rest on small supports and should be read as indicative. Figure~\ref{fig:perclass} shows the same comparison graphically.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Per-class F1 on the test split (calibrated). Support is the number of test images per class. Bold marks the best model per class.}
+\label{tab:perclass}
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Model} & akiec & bcc & bkl & df & mel & nv & vasc \\
+\midrule
+HAMCNN          & 0.332 & 0.370 & 0.409 & 0.222 & 0.413 & 0.802 & 0.735 \\
+Enhanced CNN    & 0.432 & 0.456 & 0.484 & 0.146 & 0.419 & 0.799 & 0.618 \\
+Double CNN      & 0.403 & 0.464 & 0.447 & 0.254 & 0.415 & 0.807 & 0.554 \\
+ViT-DINOv2      & 0.571 & \textbf{0.755} & \textbf{0.709} & 0.621 & \textbf{0.595} & \textbf{0.915} & 0.872 \\
+EfficientNet-B3 & 0.559 & 0.709 & 0.616 & 0.533 & 0.513 & 0.893 & 0.700 \\
+\midrule
+Ensemble        & \textbf{0.596} & 0.729 & 0.702 & \textbf{0.643} & 0.592 & 0.902 & \textbf{0.927} \\
+\midrule
+Support         & 49 & 78 & 164 & 17 & 168 & 1,006 & 21 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[H]
+  \centering
+  \figfile{per_class_f1_test.png}{\linewidth}{0.35\linewidth}
+  \caption{Per-class F1 on the test split for all models and the ensemble (calibrated).}
+  \label{fig:perclass}
+\end{figure}
+
+\subsection{Calibration}
+Temperature scaling lowers the ECE of every model on both splits. On test, ViT-DINOv2 falls from 0.164 to 0.020, and the ensemble falls from 0.272 to 0.019. All fitted model temperatures are below one. This means that the raw outputs are underconfident. A plausible cause is the combination of mixup and CutMix on every batch, label smoothing and focal loss, but we did not test these causes separately. The raw ensemble is the least well calibrated model, which is consistent with the averaging of softmax outputs lowering the confidence further, although this was not tested directly.
+
+The calibration effect is not identical on the two splits. The ensemble's ECE after calibration is 0.034 on validation and 0.019 on test, while the EfficientNet-B3 ECE rises from 0.026 on validation to 0.035 on test. These differences are small in absolute terms, but they show that the validation calibration does not transfer uniformly to test.
+
+\subsection{Confusion Matrices and Error Analysis}
+Figure~\ref{fig:confusion} shows row-normalised confusion matrices on the test split for all models and the ensemble. The rows are true classes and the columns are predicted classes. The diagonal is the proportion of correct predictions for each class. The two transfer models have clearly stronger diagonals than the networks trained from scratch.
+
+Figure~\ref{fig:gradcam} shows Grad-CAM maps for eight misclassified validation images, sampled at random, from ViT-DINOv2. In several panels the activation is spread over surrounding skin rather than concentrated on the lesion. We did not measure whether this pattern explains the errors, so the maps are presented as qualitative examples only.
+
+\begin{figure*}[t]
+  \centering
+  \figfile{confusion_normalised_test.png}{0.9\textwidth}{0.5\textwidth}
+  \caption{Row-normalised confusion matrices on the test split for all models and the calibrated ensemble. Rows are true classes; columns are predicted classes.}
+  \label{fig:confusion}
+\end{figure*}
+
+\begin{figure}[H]
+  \centering
+  \figfile{vit_dinov2_val_wrong.png}{\linewidth}{0.3\linewidth}
+  \caption{Grad-CAM for ViT-DINOv2 on eight randomly sampled misclassified validation images. The top rows show the input images with their true labels; the bottom rows show heatmap overlays with the predicted labels. Qualitative only.}
+  \label{fig:gradcam}
+\end{figure}
+
+\subsection{Ablation}
+The original plan included an ablation on the validation split. No ablation results are included in this report, so no claim about the contribution of individual components is made here.
+
+% ── 6. Limitations ────────────────────────────────────────────────────────────
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{itemize}[noitemsep, leftmargin=*]
+  \item The study uses one training run, one split and one seed. No confidence intervals or repeated runs were computed, so the differences between models are not claimed to be significant.
+  \item Near-duplicate images were not detected. Grouping uses the dataset's \code{lesion_id} only, so residual leakage across splits cannot be excluded, and the test scores may be optimistic.
+  \item The df and vasc classes have 17 and 21 images in each of the validation and test splits. Per-class F1 scores for these classes are unstable.
+  \item Validation was used for checkpoint selection and for all post-hoc fitting, so validation metrics are optimistic. Test metrics are the unbiased estimate, but they come from a single split.
+  \item The ensemble weights were fitted to severity-weighted recall, while the reported metric is macro-F1, and the severity weights were chosen ad hoc.
+  \item The logit adjustment selected $\tau=0$, so it has no effect in the reported pipeline.
+  \item Gradient clipping is active for most steps of the transfer models after unfreezing. The double CNN was resumed from a checkpoint at epoch 7. Resume restores the main-process random state but not the random state of the data-loader workers, so the resumed run is not bit-exact.
+  \item The full training logs for HAMCNN and the enhanced CNN are not included in the provided run output; their best-epoch values in Table 2 come from a separate log.
+  \item HAM10000 comes from a single clinical centre and has limited coverage of darker skin tones. Performance on other dermoscopes or populations may be lower.
+  \item The models produce probabilities that are not reliable on inputs outside the dermoscopic domain, and no out-of-distribution detection was implemented.
+  \item This project is for research and educational purposes only. It is not a diagnostic tool and must not be used for clinical decisions.
+\end{itemize}
+
+% ── 7. Conclusion ─────────────────────────────────────────────────────────────
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presented a multi-model pipeline for seven-class skin lesion classification on HAM10000, with lesion-grouped splits, train-only outlier filtering, post-hoc calibration and a weighted ensemble. The two transfer models reach test macro-F1 values of 0.646 and 0.720, against 0.469 to 0.479 for the networks trained from scratch. The calibrated ensemble reaches a test macro-F1 of 0.727, slightly above the best single model, and it improves calibration substantially. Its accuracy is slightly lower than that of the best single model. The results come from a single split and a single seed, and the minority classes contain only 17 and 21 test images. Future work should add repeated seeds with confidence intervals, a near-duplicate check before splitting, and a test of the effect of the fitting objective on the ensemble.
+
+% ── References ────────────────────────────────────────────────────────────────
+\bibliographystyle{unsrt}
+\begin{thebibliography}{99}
+
+\bibitem{tschandl2018ham10000}
+P.~Tschandl, C.~Rosendahl, and H.~Kittler,
+``The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions,''
+\textit{Scientific Data}, vol.~5, p.~180161, 2018.
+\href{https://doi.org/10.1038/sdata.2018.161}{doi:10.1038/sdata.2018.161}
+
+\bibitem{codella2019isic}
+N.~Codella et al.,
+``Skin lesion analysis toward melanoma detection 2018: A challenge hosted by the International Skin Imaging Collaboration (ISIC),''
+\textit{arXiv:1902.03368}, 2019.
+\href{https://arxiv.org/abs/1902.03368}{arXiv:1902.03368}
+
+\bibitem{esteva2017dermatologist}
+A.~Esteva et al.,
+``Dermatologist-level classification of skin cancer with deep neural networks,''
+\textit{Nature}, vol.~542, pp.~115--118, 2017.
+\href{https://doi.org/10.1038/nature21056}{doi:10.1038/nature21056}
+
+\bibitem{cassidy2022}
+B.~Cassidy et al.,
+``Analysis of the ISIC image datasets: Usage, benchmarks and recommendations,''
+\textit{Medical Image Analysis}, vol.~75, p.~102305, 2022.
+\href{https://doi.org/10.1016/j.media.2021.102305}{doi:10.1016/j.media.2021.102305}
+
+\bibitem{abhishek2024}
+K.~Abhishek, A.~Jain, and G.~Hamarneh,
+``Investigating the Quality of DermaMNIST and Fitzpatrick17k Dermatological Image Datasets,''
+\textit{arXiv:2401.14497}, 2024.
+\href{https://arxiv.org/abs/2401.14497}{arXiv:2401.14497}
+
+\bibitem{daneshjou2022}
+R.~Daneshjou et al.,
+``Disparities in dermatology AI performance on a diverse, curated clinical image set,''
+\textit{Science Advances}, vol.~8, no.~31, p.~eabq6147, 2022.
+\href{https://doi.org/10.1126/sciadv.abq6147}{doi:10.1126/sciadv.abq6147}
+
+\bibitem{tan2019efficientnet}
+M.~Tan and Q.~V.~Le,
+``EfficientNet: Rethinking model scaling for convolutional neural networks,''
+in \textit{Proc.\ ICML}, 2019, pp.~6105--6114.
+\href{https://doi.org/10.48550/arXiv.1905.11946}{doi:10.48550/arXiv.1905.11946}
+
+\bibitem{dosovitskiy2021vit}
+A.~Dosovitskiy et al.,
+``An image is worth 16$\times$16 words: Transformers for image recognition at scale,''
+in \textit{Proc.\ ICLR}, 2021.
+\href{https://doi.org/10.48550/arXiv.2010.11929}{doi:10.48550/arXiv.2010.11929}
+
+\bibitem{oquab2024dinov2}
+M.~Oquab et al.,
+``DINOv2: Learning robust visual features without supervision,''
+\textit{Transactions on Machine Learning Research}, 2024.
+\href{https://doi.org/10.48550/arXiv.2304.07193}{doi:10.48550/arXiv.2304.07193}
+
+\bibitem{lin2017focal}
+T.-Y.~Lin, P.~Goyal, R.~Girshick, K.~He, and P.~Doll\'ar,
+``Focal loss for dense object detection,''
+in \textit{Proc.\ ICCV}, 2017, pp.~2999--3007.
+\href{https://doi.org/10.1109/ICCV.2017.324}{doi:10.1109/ICCV.2017.324}
+
+\bibitem{foret2021sam}
+P.~Foret, A.~Kleiner, H.~Mobahi, and B.~Neyshabur,
+``Sharpness-aware minimization for efficiently improving generalization,''
+in \textit{Proc.\ ICLR}, 2021.
+\href{https://arxiv.org/abs/2010.01412}{arXiv:2010.01412}
+
+\bibitem{zhang2018mixup}
+H.~Zhang, M.~Ciss\'e, Y.~N.~Dauphin, and D.~Lopez-Paz,
+``mixup: Beyond empirical risk minimization,''
+in \textit{Proc.\ ICLR}, 2018.
+\href{https://doi.org/10.48550/arXiv.1710.09412}{doi:10.48550/arXiv.1710.09412}
+
+\bibitem{lin2017fpn}
+T.-Y.~Lin, P.~Doll\'ar, R.~Girshick, K.~He, B.~Hariharan, and S.~Belongie,
+``Feature pyramid networks for object detection,''
+in \textit{Proc.\ CVPR}, 2017, pp.~936--944.
+\href{https://doi.org/10.1109/CVPR.2017.106}{doi:10.1109/CVPR.2017.106}
+
+\bibitem{guo2017calibration}
+C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q.~Weinberger,
+``On calibration of modern neural networks,''
+in \textit{Proc.\ ICML}, 2017, pp.~1321--1330.
+\href{https://doi.org/10.48550/arXiv.1706.04599}{doi:10.48550/arXiv.1706.04599}
+
+\bibitem{storn1997differential}
+R.~Storn and K.~Price,
+``Differential evolution: A simple and efficient heuristic for global optimization over continuous spaces,''
+\textit{Journal of Global Optimization}, vol.~11, pp.~341--359, 1997.
+\href{https://doi.org/10.1023/A:1008202821328}{doi:10.1023/A:1008202821328}
+
+\bibitem{selvaraju2017gradcam}
+R.~R.~Selvaraju et al.,
+``Grad-CAM: Visual explanations from deep networks via gradient-based localization,''
+in \textit{Proc.\ ICCV}, 2017, pp.~618--626.
+\href{https://doi.org/10.1109/ICCV.2017.74}{doi:10.1109/ICCV.2017.74}
+
+\bibitem{buslaev2020albumentations}
+A.~Buslaev et al.,
+``Albumentations: Fast and flexible image augmentations,''
+\textit{Information}, vol.~11, no.~2, p.~125, 2020.
+\href{https://doi.org/10.3390/info11020125}{doi:10.3390/info11020125}
+
+\end{thebibliography}
+
+\end{document}
